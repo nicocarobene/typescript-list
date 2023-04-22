@@ -1,18 +1,22 @@
-import { type User } from '../types'
+import { SortBy, type User } from '../types.d'
 interface Props {
   users: User[]
   showColors: boolean
   deleteUser: (email: string) => void
+  changeSorting: (sort: SortBy) => void
 }
-export default function UserList ({ users, deleteUser, showColors }: Props) {
+export default function UserList ({ changeSorting, users, deleteUser, showColors }: Props) {
   return (
     <table width='100%'>
         <thead>
             <tr>
                 <th>Foto</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
-                <th>Pais</th>
+                {/* rome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+                <th className='pointer' onClick={() => { changeSorting(SortBy.NAME) }}>Nombre</th>
+                 {/* rome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+                <th className='pointer' onClick={() => { changeSorting(SortBy.LAST) }}>Apellido</th>
+                 {/* rome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
+                <th className='pointer' onClick={() => { changeSorting(SortBy.COUNTRY) }}>Pais</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -21,7 +25,6 @@ export default function UserList ({ users, deleteUser, showColors }: Props) {
                 users.map((user, index) => {
                   const backgroundColor = index % 2 === 0 ? '#333' : '#555'
                   const color = showColors ? backgroundColor : 'transparent'
-                  console.log({ color, showColors })
                   return (
                     <tr key={user.email} style={{ backgroundColor: color }}>
                         <td>

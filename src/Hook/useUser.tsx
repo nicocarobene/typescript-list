@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { type User } from '../types'
-export default function useUser ({ originalUsers }) {
+interface Props {
+  originalUsers: React.MutableRefObject<User[]>
+}
+
+export default function useUser ({ originalUsers }: Props) {
   const [users, setUsers] = useState<User[]>([])
   useEffect(() => {
     fetch('https://randomuser.me/api?results=100')

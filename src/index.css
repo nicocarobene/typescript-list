@@ -55,6 +55,20 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.tabel--showColors tr:nth-child(2n){
+  background-color: #333;
+}
+.tabel--showColors tr:nth-child(2n + 1){
+  background-color:  #555;
+}
+.tabel--showColors tr:nth-child(odd){
+  background-color: #333;
+}
+.tabel--showColors tr:nth-child(even){
+  background-color:  #555;
+}
+/* esto era para realizar las cebras de las columnas si lo haciamos con css */
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

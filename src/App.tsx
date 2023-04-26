@@ -6,7 +6,6 @@ import { SortBy, type User } from './types.d'
 
 function App () {
   const originalUsers = useRef<User[]>([])
-
   const { users, updateUser } = useUser({ originalUsers })
 
   const [showColors, setShowColor] = useState(false)
@@ -50,9 +49,24 @@ function App () {
     if (sorting === SortBy.COUNTRY) return filterUsers.toSorted((a, b) => a.location.country.localeCompare(b.location.country))
     if (sorting === SortBy.NAME) return filterUsers.toSorted((a, b) => a.name.first.localeCompare(b.name.first))
     if (sorting === SortBy.LAST) return filterUsers.toSorted((a, b) => a.name.last.localeCompare(b.name.last))
+
+    // alternativa extensible que vimos con midu muy buena e interesante a implementar
+    // const comparePropertis: Record<string, (user: User) => any> = {
+    //   [SortBy.COUNTRY]: (user) => user.location.country,
+    //   [SortBy.NAME]: (user) => user.name.first,
+    //   [SortBy.LAST]: (user) => user.name.last
+    // }
+    // return filterUsers.toSorted((a, b) => {
+    //   const extractProperty = comparePropertis[sorting]
+    //   return extractProperty(a).localeCompare(extractProperty(b))
+    // })
+
+    // alternativa de tosorted ya que sort muta el objeto y no queremos eso porque no renderiza el componente si mutamos.
     // [...users].sort((a, b) => {
     // return a.location.country.localeCompare(b.location.country)
     // })
+
+    return filterUsers
   }, [filterUsers, sorting])
 
   return (

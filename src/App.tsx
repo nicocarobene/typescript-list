@@ -1,12 +1,14 @@
 import './App.css'
 import UserList from './component/UserList'
-import useUser from './Hook/useUser'
-import { useState, useRef, useMemo } from 'react'
-import { SortBy, type User } from './types.d'
+import { useState, useMemo } from 'react'
+import { SortBy } from './types.d'
+import { usenUser } from './Hook/usenUsers'
 
 function App () {
-  const originalUsers = useRef<User[]>([])
-  const { users, updateUser } = useUser({ originalUsers })
+  // const originalUsers = useRef<User[]>([])
+  // const { updateUser, loading, error, setCurrentPage } = useUser({ originalUsers })
+
+  const { isLoading, isError, refetch, fetchNextPage, hasNextPage, users } = usenUser()
 
   const [showColors, setShowColor] = useState(false)
   const [sorting, setSorting] = useState<SortBy>(SortBy.NONE)
@@ -23,12 +25,13 @@ function App () {
   }
 
   const handleDelete = (email: string) => {
-    const filteredUsers = users.filter((user) => user.email !== email)
-    updateUser(filteredUsers)
+    // const filteredUsers = users.filter((user) => user.email !== email)
+    // updateUser(filteredUsers)
   }
 
-  const handleReset = () => {
-    updateUser(originalUsers.current)
+  const handleReset = async () => {
+    await refetch()
+    // updateUser(originalUsers.current)
   }
 
   const handleChangeSort = (sort: SortBy) => {
@@ -45,10 +48,10 @@ function App () {
   const sortedUsers = useMemo(() => {
     console.log('user')
 
-    if (sorting === SortBy.NONE) return filterUsers
-    if (sorting === SortBy.COUNTRY) return filterUsers.toSorted((a, b) => a.location.country.localeCompare(b.location.country))
-    if (sorting === SortBy.NAME) return filterUsers.toSorted((a, b) => a.name.first.localeCompare(b.name.first))
-    if (sorting === SortBy.LAST) return filterUsers.toSorted((a, b) => a.name.last.localeCompare(b.name.last))
+    // if (sorting === SortBy.NONE) return filterUsers
+    // if (sorting === SortBy.COUNTRY) return filterUsers.toSorted((a, b) => a.location.country.localeCompare(b.location.country))
+    // if (sorting === SortBy.NAME) return filterUsers.toSorted((a, b) => a.name.first.localeCompare(b.name.first))
+    // if (sorting === SortBy.LAST) return filterUsers.toSorted((a, b) => a.name.last.localeCompare(b.name.last))
 
     // alternativa extensible que vimos con midu muy buena e interesante a implementar
     // const comparePropertis: Record<string, (user: User) => any> = {
@@ -77,13 +80,22 @@ function App () {
         <button type='button' onClick={toggleSortByCountry}>
           {sorting === SortBy.COUNTRY ? 'MessCountry' : 'SortByCountry' }
         </button>
-        <button type='button' onClick={handleReset}>Reset Original Users</button>
+        <button type='button' onClick={() => { void handleReset() }}>Reset Original Users</button>
         <input className='Country' placeholder='Filtra por Pais' onChange={(e) => {
           setFilterCountry(e.target.value)
         }}/>
       </header>
       <main>
-      <UserList changeSorting={handleChangeSort} users={sortedUsers} deleteUser={handleDelete} showColors={showColors}/>
+        {users.length > 0 && (
+            <UserList changeSorting={handleChangeSort} users={sortedUsers} deleteUser={handleDelete} showColors={showColors}/>
+        )}
+        {isLoading && <p>isLoading . . .</p>}
+        {isError && <p>Oh no algo salio mal</p>}
+        {!isLoading && !isError && users.length === 0 && <p>No hay Usuarios</p>}
+        {!isLoading && !isError && hasNextPage === true && (
+          <button onClick={ () => { void fetchNextPage() }}>mostrar mas resultados</button>)
+        }
+         {!isLoading && !isError && hasNextPage === false && <p>No hay mas resultados</p> }
       </main>
     </div>
   )
